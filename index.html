@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Tài Xỉu AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 2.5em;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h2 {
+            color: #2d3436;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+        
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .quick-input {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .quick-btn {
+            padding: 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .quick-btn.tai {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .quick-btn.tai:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .quick-btn.xiu {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+        
+        .quick-btn.xiu:hover {
+            background: #4ecdc4;
+            color: white;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        
+        .prediction-box {
+            background: linear-gradient(145deg, #ffeaa7, #fdcb6e);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .prediction-label {
+            font-size: 18px;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+        
+        .prediction-result {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2d3436;
+            margin: 10px 0;
+        }
+        
+        .confidence {
+            font-size: 16px;
+            color: #636e72;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 10px;
+            background: #dfe6e9;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            transition: width 0.5s;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+        
+        .tai {
+            color: #ff6b6b;
+        }
+        
+        .xiu {
+            color: #4ecdc4;
+        }
+        
+        .analysis-box {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .analysis-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3436;
+            font-size: 16px;
+        }
+        
+        .analysis-content {
+            color: #636e72;
+            line-height: 1.6;
+        }
+        
+        .pattern-item {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 3px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .history-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #dfe6e9;
+            transition: all 0.3s;
+        }
+        
+        .history-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .history-item.tai {
+            border-left-color: #ff6b6b;
+        }
+        
+        .history-item.xiu {
+            border-left-color: #4ecdc4;
+        }
+        
+        .chart-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .chart-label {
+            width: 80px;
+            font-weight: bold;
+        }
+        
+        .chart-bar-fill {
+            height: 30px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+        
+        .note-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-input {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Phân Tích & Dự Đoán Tài Xỉu AI 🤖</h1>
+        
+        <div class="main-grid">
+            <!-- Phần nhập liệu -->
+            <div class="card">
+                <h2>📝 Nhập Kết Quả</h2>
+                
+                <div class="input-section">
+                    <div class="quick-input">
+                        <button class="quick-btn tai" onclick="addQuickResult('TÀI')">
+                            TÀI<br>(11-17)
+                        </button>
+                        <button class="quick-btn xiu" onclick="addQuickResult('XỈU')">
+                            XỈU<br>(4-10)
+                        </button>
+                    </div>
+                    
+                    <button class="btn-primary btn-secondary" onclick="clearAll()">
+                        🗑️ Xóa Tất Cả
+                    </button>
+                </div>
+                
+                <div class="note-box">
+                    <strong>💡 Hướng dẫn:</strong><br>
+                    • Nhập chuỗi: T hoặc X (vd: TXXTTX)<br>
+                    • Nhập chi tiết: 3 số xúc xắc (vd: 345)<br>
+                    • Hoặc click nút nhanh TÀI/XỈU
+                </div>
+            </div>
+            
+            <!-- Phần phân tích -->
+            <div class="card">
+                <h2>🎯 Dự Đoán Ván Tiếp Theo</h2>
+                
+                <div class="prediction-box" id="predictionBox">
+                    <div class="prediction-label">Nên đặt ván tiếp:</div>
+                    <div class="prediction-result" id="predictionResult">--</div>
+                    <div class="confidence" id="confidenceText">Chưa có dữ liệu</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                    </div>
+                </div>
+                 <div class="analysis-box">
+                    <div class="analysis-title">🎲 10 Ván Gần Nhất</div>
+                    <div id="recentPattern">Chưa có dữ liệu</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Tổng Ván</div>
+                        <div class="stat-value" id="totalGames">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Tỷ Lệ T/X</div>
+                        <div class="stat-value" id="ratio">0:0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">TÀI</div>
+                        <div class="stat-value tai" id="taiCount">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">XỈU</div>
+                        <div class="stat-value xiu" id="xiuCount">0</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-bar">
+                        <div class="chart-label tai">TÀI:</div>
+                        <div class="chart-bar-fill" id="taiBar" style="width: 0%; background: #ff6b6b;">0%</div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label xiu">XỈU:</div>
+                        <div class="chart-bar-fill" id="xiuBar" style="width: 0%; background: #4ecdc4;">0%</div>
+                    </div>
+                </div>
+                
+                <div class="analysis-box">
+                    <div class="analysis-title">🔥 Chuỗi Hiện Tại</div>
+                    <div class="analysis-content" id="streakInfo">Chưa có dữ liệu</div>
+                </div>
+                
+                <div class="analysis-box">
+                    <div class="analysis-title">📊 Phân Tích Chi Tiết</div>
+                    <div class="analysis-content" id="detailAnalysis">Nhập ít nhất 5 ván để phân tích...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lịch sử -->
+        <div class="card">
+            <h2>📜 Lịch Sử Kết Quả</h2>
+            <div class="history-list" id="historyList">
+                <p style="text-align: center; color: #95a5a6; padding: 20px;">
+                    Chưa có lịch sử. Hãy nhập kết quả để bắt đầu!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let history = [];
+        
+        function addQuickResult(result) {
+            history.unshift({
+                result: result,
+                time: new Date().toLocaleTimeString('vi-VN'),
+                dices: null
+            });
+            
+            updateAll();
+        }
+        
+        function addFromDice() {
+            const input = document.getElementById('diceInput').value.trim();
+            if (!input) {
+                alert('Vui lòng nhập 3 số xúc xắc!');
+                return;
+            }
+            
+            // Lấy 3 chữ số
+            const numbers = input.replace(/\s+/g, '').split('').filter(n => n >= '1' && n <= '6').slice(0, 3);
+            
+            if (numbers.length !== 3) {
+                alert('Vui lòng nhập đúng 3 số từ 1-6!');
+                return;
+            }
+            
+            const dices = numbers.map(n => parseInt(n));
+            const total = dices.reduce((a, b) => a + b, 0);
+            const result = total >= 11 ? 'TÀI' : 'XỈU';
+            
+            history.unshift({
+                result: result,
+                time: new Date().toLocaleTimeString('vi-VN'),
+                dices: dices,
+                total: total
+            });
+            
+            document.getElementById('diceInput').value = '';
+            updateAll();
+        }
+        
+        function addBulkResults() {
+            const input = document.getElementById('bulkInput').value.toUpperCase().trim();
+            if (!input) {
+                alert('Vui lòng nhập chuỗi kết quả!');
+                return;
+            }
+            
+            let added = 0;
+            for (let i = input.length - 1; i >= 0; i--) {
+                const char = input[i];
+                if (char === 'T') {
+                    history.unshift({
+                        result: 'TÀI',
+                        time: new Date().toLocaleTimeString('vi-VN'),
+                        dices: null
+                    });
+                    added++;
+                } else if (char === 'X') {
+                    history.unshift({
+                        result: 'XỈU',
+                        time: new Date().toLocaleTimeString('vi-VN'),
+                        dices: null
+                    });
+                    added++;
+                }
+            }
+            
+            if (added > 0) {
+                document.getElementById('bulkInput').value = '';
+                updateAll();
+            } else {
+                alert('Không tìm thấy kết quả hợp lệ! Chỉ nhập T hoặc X');
+            }
+        }
+        
+        function updateAll() {
+            updateHistory();
+            updateStats();
+            updatePrediction();
+            updateAnalysis();
+        }
+        
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: #95a5a6; padding: 20px;">Chưa có lịch sử. Hãy nhập kết quả để bắt đầu!</p>';
+                return;
+            }
+            
+            historyList.innerHTML = history.map((item, index) => {
+                const resultClass = item.result === 'TÀI' ? 'tai' : 'xiu';
+                const diceInfo = item.dices ? `🎲 ${item.dices.join('-')} = ${item.total}` : '';
+                
+                return `
+                    <div class="history-item ${resultClass}">
+                        <div>
+                            <strong>#${history.length - index}</strong> 
+                            ${item.time} ${diceInfo}
+                        </div>
+                        <div style="font-size: 20px; font-weight: bold;" class="${resultClass}">
+                            ${item.result}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateStats() {
+            const total = history.length;
+            const taiCount = history.filter(h => h.result === 'TÀI').length;
+            const xiuCount = history.filter(h => h.result === 'XỈU').length;
+            
+            document.getElementById('totalGames').textContent = total;
+            document.getElementById('taiCount').textContent = taiCount;
+            document.getElementById('xiuCount').textContent = xiuCount;
+            document.getElementById('ratio').textContent = `${taiCount}:${xiuCount}`;
+            
+            // Biểu đồ
+            const taiPercent = total > 0 ? (taiCount / total * 100).toFixed(1) : 0;
+            const xiuPercent = total > 0 ? (xiuCount / total * 100).toFixed(1) : 0;
+            
+            document.getElementById('taiBar').style.width = taiPercent + '%';
+            document.getElementById('taiBar').textContent = taiPercent + '%';
+            document.getElementById('xiuBar').style.width = xiuPercent + '%';
+            document.getElementById('xiuBar').textContent = xiuPercent + '%';
+        }
+        
+        function updatePrediction() {
+            if (history.length < 3) {
+                document.getElementById('predictionResult').textContent = '--';
+                document.getElementById('confidenceText').textContent = 'Cần ít nhất 3 ván để dự đoán';
+                document.getElementById('confidenceFill').style.width = '0%';
+                return;
+            }
+            
+            const recent10 = history.slice(0, 10);
+            const recent20 = history.slice(0, 20);
+            
+            let prediction = '';
+            let confidence = 0;
+            let reason = '';
+            
+            // Phân tích chuỗi dài
+            let currentStreak = 1;
+            for (let i = 1; i < recent10.length; i++) {
+                if (recent10[i].result === recent10[0].result) {
+                    currentStreak++;
+                } else {
+                    break;
+                }
+            }
+            
+            // Nếu chuỗi >= 4, dự đoán đảo chiều
+            if (currentStreak >= 4) {
+                prediction = recent10[0].result === 'TÀI' ? 'XỈU' : 'TÀI';
+                confidence = Math.min(40 + currentStreak * 10, 85);
+                reason = `Chuỗi ${currentStreak} ${recent10[0].result} liên tiếp - khả năng cao đảo chiều`;
+            } else {
+                // Phân tích tỷ lệ
+                const taiCount10 = recent10.filter(h => h.result === 'TÀI').length;
+                const xiuCount10 = recent10.filter(h => h.result === 'XỈU').length;
+                
+                if (taiCount10 > xiuCount10 + 3) {
+                    prediction = 'XỈU';
+                    confidence = Math.min(50 + (taiCount10 - xiuCount10) * 5, 80);
+                    reason = `10 ván gần: ${taiCount10} TÀI vs ${xiuCount10} XỈU - cần cân bằng`;
+                } else if (xiuCount10 > taiCount10 + 3) {
+                    prediction = 'TÀI';
+                    confidence = Math.min(50 + (xiuCount10 - taiCount10) * 5, 80);
+                    reason = `10 ván gần: ${taiCount10} TÀI vs ${xiuCount10} XỈU - cần cân bằng`;
+                } else {
+                    // Theo xu hướng gần nhất
+                    const last3 = recent10.slice(0, 3);
+                    const taiLast3 = last3.filter(h => h.result === 'TÀI').length;
+                    
+                    if (taiLast3 >= 2) {
+                        prediction = 'TÀI';
+                        confidence = 55;
+                        reason = '3 ván gần xu hướng TÀI';
+                    } else {
+                        prediction = 'XỈU';
+                        confidence = 55;
+                        reason = '3 ván gần xu hướng XỈU';
+                    }
+                }
+            }
+            
+            const predClass = prediction === 'TÀI' ? 'tai' : 'xiu';
+            document.getElementById('predictionResult').innerHTML = `<span class="${predClass}">${prediction}</span>`;
+            document.getElementById('confidenceText').textContent = `Độ tin cậy: ${confidence}% - ${reason}`;
+            document.getElementById('confidenceFill').style.width = confidence + '%';
+        }
+        
+        function updateAnalysis() {
+            if (history.length === 0) {
+                document.getElementById('streakInfo').textContent = 'Chưa có dữ liệu';
+                document.getElementById('detailAnalysis').textContent = 'Nhập ít nhất 5 ván để phân tích...';
+                document.getElementById('recentPattern').textContent = 'Chưa có dữ liệu';
+                return;
+            }
+            
+            // Chuỗi hiện tại
+            let streak = 1;
+            let currentResult = history[0].result;
+            for (let i = 1; i < history.length; i++) {
+                if (history[i].result === currentResult) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            const streakClass = currentResult === 'TÀI' ? 'tai' : 'xiu';
+            document.getElementById('streakInfo').innerHTML = 
+                `<span class="${streakClass}" style="font-size: 24px;">${streak} ${currentResult} liên tiếp</span>`;
+            
+            // Pattern 10 ván gần nhất
+            const recent10 = history.slice(0, 10);
+            const patternHTML = recent10.map(h => 
+                `<span class="pattern-item" style="background: ${h.result === 'TÀI' ? '#ff6b6b' : '#4ecdc4'}; color: white;">
+                    ${h.result}
+                </span>`
+            ).join('');
+            document.getElementById('recentPattern').innerHTML = patternHTML || 'Chưa có dữ liệu';
+            
+            // Phân tích chi tiết
+            if (history.length >= 5) {
+                const recent20 = history.slice(0, Math.min(20, history.length));
+                const taiCount = recent20.filter(h => h.result === 'TÀI').length;
+                const xiuCount = recent20.filter(h => h.result === 'XỈU').length;
+                
+                // Tìm chuỗi dài nhất
+                let maxStreak = 1;
+                let maxStreakType = recent20[0].result;
+                let tempStreak = 1;
+                let tempType = recent20[0].result;
+                
+                for (let i = 1; i < recent20.length; i++) {
+                    if (recent20[i].result === tempType) {
+                        tempStreak++;
+                    } else {
+                        if (tempStreak > maxStreak) {
+                            maxStreak = tempStreak;
+                            maxStreakType = tempType;
+                        }
+                        tempStreak = 1;
+                        tempType = recent20[i].result;
+                    }
+                }
+                if (tempStreak > maxStreak) {
+                    maxStreak = tempStreak;
+                    maxStreakType = tempType;
+                }
+                
+                const analysis = `
+                    <strong>📈 ${recent20.length} ván gần nhất:</strong><br>
+                    • TÀI: ${taiCount} ván (${(taiCount/recent20.length*100).toFixed(1)}%)<br>
+                    • XỈU: ${xiuCount} ván (${(xiuCount/recent20.length*100).toFixed(1)}%)<br>
+                    • Chuỗi dài nhất: ${maxStreak} ${maxStreakType} liên tiếp<br>
+                    • Xu hướng: ${taiCount > xiuCount ? 'Đang thiên về TÀI' : xiuCount > taiCount ? 'Đang thiên về XỈU' : 'Khá cân bằng'}
+                `;
+                
+                document.getElementById('detailAnalysis').innerHTML = analysis;
+            }
+        }
+        
+        function clearAll() {
+            if (confirm('Bạn có chắc muốn xóa toàn bộ dữ liệu?')) {
+                history = [];
+                updateAll();
+            }
+        }
+    </script>
+</body>
+</html>
