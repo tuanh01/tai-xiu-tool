@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phân Tích Tài Xỉu AI by Tu Anh</title>
+    <title>Phân Tích Tài Xỉu AI - Phiên Bản Cải Tiến</title>
     <style>
         * {
             margin: 0;
@@ -319,6 +319,47 @@
             margin: 15px 0;
         }
         
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .accuracy-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .probability-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .prob-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .prob-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .prob-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
         @media (max-width: 968px) {
             .main-grid {
                 grid-template-columns: 1fr;
@@ -336,7 +377,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎯 Phân Tích & Dự Đoán Tài Xỉu AI 🤖</h1>
+        <h1>🎯 Phân Tích Tài Xỉu AI - Phiên Bản Cải Tiến 🤖</h1>
+        
+        <div class="warning-box">
+            <strong>⚠️ Lưu ý quan trọng:</strong><br>
+            • Tài xỉu là trò chơi may rủi, mỗi ván độc lập<br>
+            • Không có thuật toán nào có thể dự đoán chính xác 100%<br>
+            • Chỉ nên sử dụng để phân tích thống kê, không phải để đặt cược<br>
+            • Xác suất cơ bản: TÀI 48.61%, XỈU 51.39%
+        </div>
         
         <div class="main-grid">
             <!-- Phần nhập liệu -->
@@ -368,17 +417,29 @@
             
             <!-- Phần phân tích -->
             <div class="card">
-                <h2>🎯 Dự Đoán Ván Tiếp Theo</h2>
+                <h2>🎯 Phân Tích Thống Kê</h2>
+                
+                <div class="probability-display">
+                    <div class="prob-item">
+                        <div class="prob-value tai">48.61%</div>
+                        <div class="prob-label">Xác suất TÀI</div>
+                    </div>
+                    <div class="prob-item">
+                        <div class="prob-value xiu">51.39%</div>
+                        <div class="prob-label">Xác suất XỈU</div>
+                    </div>
+                </div>
                 
                 <div class="prediction-box" id="predictionBox">
-                    <div class="prediction-label">Nên đặt ván tiếp:</div>
+                    <div class="prediction-label">Phân tích thống kê:</div>
                     <div class="prediction-result" id="predictionResult">--</div>
                     <div class="confidence" id="confidenceText">Chưa có dữ liệu</div>
                     <div class="confidence-bar">
                         <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
                     </div>
                 </div>
-                 <div class="analysis-box">
+                
+                <div class="analysis-box">
                     <div class="analysis-title">🎲 10 Ván Gần Nhất</div>
                     <div id="recentPattern">Chưa có dữ liệu</div>
                 </div>
@@ -422,6 +483,15 @@
                     <div class="analysis-title">📊 Phân Tích Chi Tiết</div>
                     <div class="analysis-content" id="detailAnalysis">Nhập ít nhất 5 ván để phân tích...</div>
                 </div>
+                
+                <div class="accuracy-box">
+                    <div class="analysis-title">🎯 Độ Chính Xác Thực Tế</div>
+                    <div class="analysis-content" id="accuracyInfo">
+                        • Xác suất lý thuyết: TÀI 48.61%, XỈU 51.39%<br>
+                        • Mỗi ván độc lập, không có pattern cố định<br>
+                        • Thuật toán chỉ phân tích thống kê, không dự đoán
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -438,6 +508,12 @@
 
     <script>
         let history = [];
+        
+        // Xác suất lý thuyết của tài xỉu
+        const THEORETICAL_PROBABILITIES = {
+            TAI: 0.4861,
+            XIU: 0.5139
+        };
         
         function addQuickResult(result) {
             history.unshift({
@@ -517,7 +593,7 @@
         function updateAll() {
             updateHistory();
             updateStats();
-            updatePrediction();
+            updateStatisticalAnalysis();
             updateAnalysis();
         }
         
@@ -567,69 +643,48 @@
             document.getElementById('xiuBar').textContent = xiuPercent + '%';
         }
         
-        function updatePrediction() {
+        function updateStatisticalAnalysis() {
             if (history.length < 3) {
                 document.getElementById('predictionResult').textContent = '--';
-                document.getElementById('confidenceText').textContent = 'Cần ít nhất 3 ván để dự đoán';
+                document.getElementById('confidenceText').textContent = 'Cần ít nhất 3 ván để phân tích';
                 document.getElementById('confidenceFill').style.width = '0%';
                 return;
             }
             
-            const recent10 = history.slice(0, 10);
-            const recent20 = history.slice(0, 20);
+            const recent20 = history.slice(0, Math.min(20, history.length));
+            const taiCount = recent20.filter(h => h.result === 'TÀI').length;
+            const xiuCount = recent20.filter(h => h.result === 'XỈU').length;
+            const total = recent20.length;
             
-            let prediction = '';
+            // Tính độ lệch so với xác suất lý thuyết
+            const actualTaiRate = taiCount / total;
+            const actualXiuRate = xiuCount / total;
+            const taiDeviation = Math.abs(actualTaiRate - THEORETICAL_PROBABILITIES.TAI);
+            const xiuDeviation = Math.abs(actualXiuRate - THEORETICAL_PROBABILITIES.XIU);
+            
+            // Phân tích thống kê
+            let analysis = '';
             let confidence = 0;
-            let reason = '';
             
-            // Phân tích chuỗi dài
-            let currentStreak = 1;
-            for (let i = 1; i < recent10.length; i++) {
-                if (recent10[i].result === recent10[0].result) {
-                    currentStreak++;
-                } else {
-                    break;
+            if (taiDeviation > 0.1 || xiuDeviation > 0.1) {
+                // Có độ lệch đáng kể
+                if (actualTaiRate > THEORETICAL_PROBABILITIES.TAI + 0.1) {
+                    analysis = 'TÀI xuất hiện nhiều hơn bình thường';
+                    confidence = Math.min(30 + taiDeviation * 200, 60);
+                } else if (actualXiuRate > THEORETICAL_PROBABILITIES.XIU + 0.1) {
+                    analysis = 'XỈU xuất hiện nhiều hơn bình thường';
+                    confidence = Math.min(30 + xiuDeviation * 200, 60);
                 }
-            }
-            
-            // Nếu chuỗi >= 4, dự đoán đảo chiều
-            if (currentStreak >= 4) {
-                prediction = recent10[0].result === 'TÀI' ? 'XỈU' : 'TÀI';
-                confidence = Math.min(40 + currentStreak * 10, 85);
-                reason = `Chuỗi ${currentStreak} ${recent10[0].result} liên tiếp - khả năng cao đảo chiều`;
             } else {
-                // Phân tích tỷ lệ
-                const taiCount10 = recent10.filter(h => h.result === 'TÀI').length;
-                const xiuCount10 = recent10.filter(h => h.result === 'XỈU').length;
-                
-                if (taiCount10 > xiuCount10 + 3) {
-                    prediction = 'XỈU';
-                    confidence = Math.min(50 + (taiCount10 - xiuCount10) * 5, 80);
-                    reason = `10 ván gần: ${taiCount10} TÀI vs ${xiuCount10} XỈU - cần cân bằng`;
-                } else if (xiuCount10 > taiCount10 + 3) {
-                    prediction = 'TÀI';
-                    confidence = Math.min(50 + (xiuCount10 - taiCount10) * 5, 80);
-                    reason = `10 ván gần: ${taiCount10} TÀI vs ${xiuCount10} XỈU - cần cân bằng`;
-                } else {
-                    // Theo xu hướng gần nhất
-                    const last3 = recent10.slice(0, 3);
-                    const taiLast3 = last3.filter(h => h.result === 'TÀI').length;
-                    
-                    if (taiLast3 >= 2) {
-                        prediction = 'TÀI';
-                        confidence = 55;
-                        reason = '3 ván gần xu hướng TÀI';
-                    } else {
-                        prediction = 'XỈU';
-                        confidence = 55;
-                        reason = '3 ván gần xu hướng XỈU';
-                    }
-                }
+                // Gần với xác suất lý thuyết
+                analysis = 'Tỷ lệ gần với xác suất lý thuyết';
+                confidence = 20;
             }
             
-            const predClass = prediction === 'TÀI' ? 'tai' : 'xiu';
-            document.getElementById('predictionResult').innerHTML = `<span class="${predClass}">${prediction}</span>`;
-            document.getElementById('confidenceText').textContent = `Độ tin cậy: ${confidence}% - ${reason}`;
+            // Hiển thị kết quả
+            document.getElementById('predictionResult').textContent = 'THỐNG KÊ';
+            document.getElementById('confidenceText').textContent = 
+                `${analysis} (Độ lệch: TÀI ${(taiDeviation*100).toFixed(1)}%, XỈU ${(xiuDeviation*100).toFixed(1)}%)`;
             document.getElementById('confidenceFill').style.width = confidence + '%';
         }
         
@@ -694,12 +749,19 @@
                     maxStreakType = tempType;
                 }
                 
+                // Tính độ lệch chuẩn
+                const expectedTai = recent20.length * THEORETICAL_PROBABILITIES.TAI;
+                const expectedXiu = recent20.length * THEORETICAL_PROBABILITIES.XIU;
+                const taiVariance = Math.abs(taiCount - expectedTai);
+                const xiuVariance = Math.abs(xiuCount - expectedXiu);
+                
                 const analysis = `
                     <strong>📈 ${recent20.length} ván gần nhất:</strong><br>
-                    • TÀI: ${taiCount} ván (${(taiCount/recent20.length*100).toFixed(1)}%)<br>
-                    • XỈU: ${xiuCount} ván (${(xiuCount/recent20.length*100).toFixed(1)}%)<br>
+                    • TÀI: ${taiCount} ván (${(taiCount/recent20.length*100).toFixed(1)}%) - Lý thuyết: ${(THEORETICAL_PROBABILITIES.TAI*100).toFixed(1)}%<br>
+                    • XỈU: ${xiuCount} ván (${(xiuCount/recent20.length*100).toFixed(1)}%) - Lý thuyết: ${(THEORETICAL_PROBABILITIES.XIU*100).toFixed(1)}%<br>
                     • Chuỗi dài nhất: ${maxStreak} ${maxStreakType} liên tiếp<br>
-                    • Xu hướng: ${taiCount > xiuCount ? 'Đang thiên về TÀI' : xiuCount > taiCount ? 'Đang thiên về XỈU' : 'Khá cân bằng'}
+                    • Độ lệch: TÀI ${taiVariance.toFixed(1)}, XỈU ${xiuVariance.toFixed(1)}<br>
+                    • Phân tích: ${taiVariance < 2 && xiuVariance < 2 ? 'Gần với xác suất lý thuyết' : 'Có độ lệch đáng kể'}
                 `;
                 
                 document.getElementById('detailAnalysis').innerHTML = analysis;
@@ -712,6 +774,36 @@
                 updateAll();
             }
         }
+        
+        // Thêm input fields cho nhập liệu
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputSection = document.querySelector('.input-section');
+            
+            // Thêm input cho xúc xắc
+            const diceInputHTML = `
+                <div class="input-group">
+                    <label>🎲 Nhập 3 số xúc xắc (1-6):</label>
+                    <input type="text" id="diceInput" placeholder="Ví dụ: 345" maxlength="3">
+                    <button class="btn-primary" onclick="addFromDice()" style="margin-top: 10px;">
+                        ➕ Thêm từ xúc xắc
+                    </button>
+                </div>
+            `;
+            
+            // Thêm input cho chuỗi
+            const bulkInputHTML = `
+                <div class="input-group">
+                    <label>📝 Nhập chuỗi kết quả (T/X):</label>
+                    <input type="text" id="bulkInput" placeholder="Ví dụ: TXXTTX" style="text-transform: uppercase;">
+                    <button class="btn-primary" onclick="addBulkResults()" style="margin-top: 10px;">
+                        ➕ Thêm chuỗi
+                    </button>
+                </div>
+            `;
+            
+            inputSection.insertAdjacentHTML('beforeend', diceInputHTML);
+            inputSection.insertAdjacentHTML('beforeend', bulkInputHTML);
+        });
     </script>
 </body>
 </html>
